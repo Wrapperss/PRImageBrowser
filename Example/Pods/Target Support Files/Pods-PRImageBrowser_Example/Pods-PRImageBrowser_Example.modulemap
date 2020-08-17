@@ -1,0 +1,6 @@
+framework module Pods_PRImageBrowser_Example {
+  umbrella header "Pods-PRImageBrowser_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

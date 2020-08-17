@@ -1,0 +1,27 @@
+{
+  "name": "PRImageBrowser",
+  "version": "0.1.0",
+  "summary": "A short description of PRImageBrowser.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/zhanglive@outlook.com/PRImageBrowser",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "zhanglive@outlook.com": "zhanglive@outlook.com"
+  },
+  "source": {
+    "git": "https://github.com/zhanglive@outlook.com/PRImageBrowser.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "PRImageBrowser/Classes/**/*",
+  "dependencies": {
+    "SDWebImage": [
+      "~> 5.2.5"
+    ]
+  }
+}

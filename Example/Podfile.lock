@@ -1,0 +1,25 @@
+PODS:
+  - PRImageBrowser (0.1.0):
+    - SDWebImage (~> 5.2.5)
+  - SDWebImage (5.2.5):
+    - SDWebImage/Core (= 5.2.5)
+  - SDWebImage/Core (5.2.5)
+
+DEPENDENCIES:
+  - PRImageBrowser (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SDWebImage
+
+EXTERNAL SOURCES:
+  PRImageBrowser:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  PRImageBrowser: 86fe233f732d50fce50c92a722cff7f1856180ef
+  SDWebImage: 4eabf2fa6695c95c47724214417a9c036c965e4a
+
+PODFILE CHECKSUM: e2244e109828730e0f0f5005273c69cfcc6a4b1d
+
+COCOAPODS: 1.6.1

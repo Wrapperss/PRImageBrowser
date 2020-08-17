@@ -1,0 +1,6 @@
+framework module PRImageBrowser {
+  umbrella header "PRImageBrowser-umbrella.h"
+
+  export *
+  module * { export * }
+}

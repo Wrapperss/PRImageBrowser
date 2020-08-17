@@ -7,6 +7,7 @@
 //
 
 #import "PRViewController.h"
+#import "PRImageBrowser.h"
 
 @interface PRViewController ()
 
@@ -24,6 +25,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)showImage:(id)sender {
+    PRImageBrowser *browser = [[PRImageBrowser alloc] init];
+    [browser showImages:@[]];
 }
 
 @end
