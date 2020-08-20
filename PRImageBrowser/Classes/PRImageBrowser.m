@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 
+@property (nonatomic, copy) NSArray *imageDatas;
+
 @end
 
 @implementation PRImageBrowser
@@ -40,18 +42,26 @@
 }
 
 - (void)showImages:(NSArray *)images currentIndex:(NSInteger)currentIndex toView:(UIView *)view {
+    self.imageDatas = images;
     [view addSubview:self];
     CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
     CGFloat scrrenHeight = [UIScreen mainScreen].bounds.size.height;
     self.frame = CGRectMake(0, scrrenHeight, screenWidth, scrrenHeight);
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.collectionView reloadData];
     [UIView animateWithDuration:0.3 animations:^{
         self.frame = view.bounds;
     }];
 }
 
 - (void)dismiss {
-    
+    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+    CGFloat scrrenHeight = [UIScreen mainScreen].bounds.size.height;
+    [UIView animateWithDuration:0.3 animations:^{
+        self.frame = CGRectMake(0, scrrenHeight, screenWidth, scrrenHeight);
+    } completion:^(BOOL finished) {
+        [self removeFromSuperview];
+    }];
 }
 
 #pragma mark - Private Function
@@ -67,7 +77,7 @@
 #pragma mark -  UICollectionViewDelegate & UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 10;
+    return self.imageDatas.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -75,7 +85,15 @@
     if (!cell) {
         cell = [[PRImageCell alloc] init];
     }
+    [cell config:self.imageDatas[indexPath.row]];
     return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell isKindOfClass:[PRImageCell class]]) {
+        PRImageCell *imageCell = (PRImageCell *)cell;
+        [imageCell adjustFrame];
+    }
 }
 
 #pragma mark - getters & setters

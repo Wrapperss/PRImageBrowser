@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PRImageData : NSObject
 
+// 图片类型
+@property (nonatomic, assign)PRImageDataType type;
+
 // 本地图片
 @property (nonatomic, strong)UIImage *localImage;
 

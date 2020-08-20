@@ -7,13 +7,6 @@
 
 #import "PRImageData.h"
 
-@interface PRImageData()
-
-// 图片类型
-@property (nonatomic, assign)PRImageDataType type;
-
-@end
-
 @implementation PRImageData
 
 - (instancetype)initWithType:(PRImageDataType)type {
