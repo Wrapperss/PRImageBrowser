@@ -15,6 +15,8 @@
 
 @property (nonatomic, copy) NSArray *imageDatas;
 
+@property (nonatomic, strong) UILabel *countLabel;
+
 @end
 
 @implementation PRImageBrowser
@@ -23,8 +25,13 @@
     self = [super init];
     if (self) {
         [self setUpUI];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"PRImageBrowserDismiss" object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Public Function
@@ -52,6 +59,12 @@
     [UIView animateWithDuration:0.3 animations:^{
         self.frame = view.bounds;
     }];
+    if (currentIndex > 0) {
+        [self.collectionView reloadData];
+        [self.collectionView layoutIfNeeded];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow: currentIndex inSection:0];
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    }
 }
 
 - (void)dismiss {
@@ -72,6 +85,17 @@
     self.collectionView.frame = self.bounds;
     self.collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.collectionView registerClass:[PRImageCell class] forCellWithReuseIdentifier:@"PRImageCell"];
+    
+    [self addSubview:self.countLabel];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (@available(iOS 11.0, *)) {
+        self.countLabel.frame = CGRectMake(self.bounds.size.width / 2 - 50, self.bounds.size.height - self.safeAreaInsets.bottom - 50, 100, 20);
+    } else {
+        self.countLabel.frame = CGRectMake(self.bounds.size.width / 2 - 50, self.bounds.size.height - self.bounds.size.height - 50, 100, 20);
+    }
 }
 
 #pragma mark -  UICollectionViewDelegate & UICollectionViewDataSource
@@ -94,6 +118,7 @@
         PRImageCell *imageCell = (PRImageCell *)cell;
         [imageCell adjustFrame];
     }
+    self.countLabel.text = [NSString stringWithFormat:@"%@ / %@", @(indexPath.row + 1), @(self.imageDatas.count)];
 }
 
 #pragma mark - getters & setters
@@ -109,4 +134,13 @@
     return _collectionView;
 }
 
+- (UILabel *)countLabel {
+    if (!_countLabel) {
+        _countLabel = [[UILabel alloc] init];
+        _countLabel.textColor = [UIColor whiteColor];
+        _countLabel.font = [UIFont systemFontOfSize:15];
+        _countLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _countLabel;
+}
 @end

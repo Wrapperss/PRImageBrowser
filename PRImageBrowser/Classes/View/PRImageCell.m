@@ -8,6 +8,7 @@
 #import "PRImageCell.h"
 #import <SDWebImage/SDWebImage.h>
 #import "PRImageBrowserDefine.h"
+#import "PRImageBrowserDefine.h"
 
 @interface PRImageCell() <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
@@ -74,17 +75,7 @@
     }
 }
 
-#pragma mark - Zoom
-- (void)setZoomScale:(CGFloat)scale {
-    [self.imageScrollView setZoomScale:scale animated:YES];
-    self.isZoom = (scale != 1.0);
-}
-
-- (void)resetScale {
-    [self.imageScrollView setZoomScale:1.0 animated:YES];
-    self.isZoom = NO;
-}
-
+#pragma mark - Frame
 - (void)adjustFrame {
     CGRect frame = self.imageScrollView.frame;
     if (frame.size.width == 0 || frame.size.height == 0) {
@@ -118,8 +109,6 @@
             self.imageView.center = CGPointMake(self.imageScrollView.bounds.size.width * 0.5, imageF.size.height * 0.5);
         }
     }
-    
-    [self resetScale];
 }
 
 #pragma mark - Gesture
@@ -128,34 +117,41 @@
     tapSingle.numberOfTapsRequired = 1;
     UITapGestureRecognizer *tapDouble = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(respondsToTapDouble:)];
     tapDouble.numberOfTapsRequired = 2;
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(respondsToPan:)];
-    pan.maximumNumberOfTouches = 1;
-    pan.delegate = self;
     
     [tapSingle requireGestureRecognizerToFail:tapDouble];
-    [tapSingle requireGestureRecognizerToFail:pan];
-    [tapDouble requireGestureRecognizerToFail:pan];
     
     [self addGestureRecognizer:tapSingle];
     [self addGestureRecognizer:tapDouble];
-    [self addGestureRecognizer:pan];
 }
 
 - (void)respondsToTapSingle:(UITapGestureRecognizer *)tap {
-    NSLog(@"dafjalflajf");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"PRImageBrowserDismiss" object:nil];
 }
 
 - (void)respondsToTapDouble:(UITapGestureRecognizer *)tap {
     if (self.isZoom) {
-        [self resetScale];
+        [self.imageScrollView setZoomScale:1.0 animated:YES];
     } else {
-        [self setZoomScale:3.0];
+        CGPoint point = [tap locationInView:self];
+        CGRect zoomRect = [self zoomRectForScrollView:self.imageScrollView withScale:3.0 withCenter:point];
+        [self.imageScrollView zoomToRect:zoomRect animated:YES];
     }
+    self.isZoom = (self.imageScrollView.zoomScale != 1.0);
 }
 
-- (void)respondsToPan:(UIPanGestureRecognizer *)pan {
+- (CGRect)zoomRectForScrollView:(UIScrollView *)scrollView withScale:(float)scale withCenter:(CGPoint)center {
+ 
+    CGRect zoomRect;
 
+    zoomRect.size.height = scrollView.frame.size.height / scale;
+    zoomRect.size.width  = scrollView.frame.size.width  / scale;
+ 
+    zoomRect.origin.x = center.x - (zoomRect.size.width  / 2.0);
+    zoomRect.origin.y = center.y - (zoomRect.size.height / 2.0);
+ 
+    return zoomRect;
 }
+
 #pragma mark - <UIGestureRecognizerDelegate>
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -171,26 +167,12 @@
     return actualCenter;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//    self.photo.offset = scrollView.contentOffset;
-}
-
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return self.imageView;
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     self.imageView.center = [self centerOfScrollViewContent:scrollView];
-}
-
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
-//    !self.zoomEnded ? : self.zoomEnded(self, scrollView.zoomScale);
-//
-//    if (scale == 1) {
-//        self.scrollView.maximumZoomScale = self.doubleZoomScale;
-//    }else {
-//        self.scrollView.maximumZoomScale = self.realZoomScale;
-//    }
 }
 
 #pragma mark - getter
@@ -220,7 +202,7 @@
         _imageScrollView.showsVerticalScrollIndicator = NO;
         _imageScrollView.decelerationRate = UIScrollViewDecelerationRateFast;
         _imageScrollView.maximumZoomScale = 3;
-        _imageScrollView.minimumZoomScale = 0.5;
+        _imageScrollView.minimumZoomScale = 1;
         _imageScrollView.alwaysBounceHorizontal = NO;
         _imageScrollView.alwaysBounceVertical = NO;
         _imageScrollView.layer.masksToBounds = NO;
